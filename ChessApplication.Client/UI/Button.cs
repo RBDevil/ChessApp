@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using ChessApplication.Client.Resources;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -24,6 +25,7 @@ namespace ChessApplication.Client.UI
         {
             if(click && rectangle.Contains(mousePosition))
             {
+                Sounds.Container["buttonClick"].CreateInstance().Play();
                 clickAction?.Invoke();
             }
         }

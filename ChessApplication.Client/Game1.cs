@@ -32,6 +32,7 @@ namespace ChessApplication.Client
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
             Textures.LoadTextures(Content);
+            Sounds.LoadSounds(Content);
 
             MenuState.InitializeUI();
             MenuState.Begin();

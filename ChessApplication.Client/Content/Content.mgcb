@@ -25,6 +25,12 @@
 /processorParam:TextureFormat=Color
 /build:button.png
 
+#begin buttonClick.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:buttonClick.wav
+
 #begin chessboard.png
 /importer:TextureImporter
 /processor:TextureProcessor
