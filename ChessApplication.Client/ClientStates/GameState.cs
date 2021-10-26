@@ -63,7 +63,10 @@ namespace ChessApplication.Client.ClientStates
                     int toX = (MouseManager.Position.X - Textures.boardOffset.X) / Textures.SquareSize;
                     int toY = (MouseManager.Position.Y - Textures.boardOffset.X) / Textures.SquareSize;
 
-                    logic.Input(new Move(fromX, fromY, toX, toY));
+                    if(logic.Input(new Move(fromX, fromY, toX, toY)))
+                    {
+                        Sounds.Container["pieceMovement"].Play();
+                    }
                 }
             }
         }

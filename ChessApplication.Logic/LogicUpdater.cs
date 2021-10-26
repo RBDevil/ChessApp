@@ -20,7 +20,7 @@ namespace ChessApplication.Logic
             }
         }
 
-        public void Input(Move move = null)
+        public bool Input(Move move = null)
         {
             // if got input, convert it to a move and check if valid
             if(move != null)
@@ -28,8 +28,11 @@ namespace ChessApplication.Logic
                 if (ValidateMove(move))
                 {
                     BoardState.ApplyMove(move);
+                    return true;
                 }
             }
+
+            return false;
         }
 
         public List<Move> GetAllValidMoves()

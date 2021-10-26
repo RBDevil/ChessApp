@@ -16,7 +16,7 @@ namespace ChessApplication.Client.Resources
 
             Container.Add("buttonClick", Content.Load<SoundEffect>("buttonClick").CreateInstance());
             Container.Add("pieceMovement", Content.Load<SoundEffect>("pieceMovement").CreateInstance());
-            Container["pieceMovement"].Volume = 0.3f;
+            Container["pieceMovement"].Volume = 0.2f;
         }
     }
 }
