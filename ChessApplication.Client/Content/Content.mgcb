@@ -43,6 +43,12 @@
 /processorParam:TextureFormat=Color
 /build:chessboard.png
 
+#begin pieceMovement.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:pieceMovement.wav
+
 #begin spritesheet.png
 /importer:TextureImporter
 /processor:TextureProcessor

@@ -25,7 +25,7 @@ namespace ChessApplication.Client.UI
         {
             if(click && rectangle.Contains(mousePosition))
             {
-                Sounds.Container["buttonClick"].CreateInstance().Play();
+                Sounds.Container["buttonClick"].Play();
                 clickAction?.Invoke();
             }
         }

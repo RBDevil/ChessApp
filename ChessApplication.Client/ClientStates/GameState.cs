@@ -42,6 +42,7 @@ namespace ChessApplication.Client.ClientStates
                     !logic.BoardState.Board.WhiteToMove && blackAI)
             {
                 logic.Input(agent.GetNextMove(logic));
+                Sounds.Container["pieceMovement"].Play();
             }
             //CheckForPlayerInput();
             logic.Input();
