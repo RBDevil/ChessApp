@@ -7,6 +7,18 @@ namespace ChessApplication.AI
 {
     public class Agent
     {
+        class MoveAndValue
+        {
+            
+            public Move Move;
+            public int Value;
+
+            public MoveAndValue(Move move, int value)
+            {
+                this.Move = move;
+                this.Value = value;
+            }
+        }
         class Position : IComparable
         {
             public Move FirstMove { get; }
@@ -41,18 +53,9 @@ namespace ChessApplication.AI
         }
         public Move GetNextMove(LogicUpdater startingPosition)
         {
-            List<Position> positions = GetAllPositions(new Position(startingPosition, null), 3);
-
-            positions.Sort();
-
-            if (!startingPosition.BoardState.Board.WhiteToMove)
-            {
-                return positions[positions.Count - 1].FirstMove;
-            }
-            else
-            {
-                return positions[0].FirstMove;
-            }
+            bool maximizingPlayer = startingPosition.BoardState.Board.WhiteToMove;
+            
+            return Minimax(new Position(startingPosition, null), 4, -1000, 1000, maximizingPlayer).Move;
         }
         List<Position> GetAllPositions(Position startingPosition, int depth)
         {
@@ -163,6 +166,67 @@ namespace ChessApplication.AI
             //else value -= 2;
 
             return value;
+        }
+        MoveAndValue Minimax(Position position, int depth, int alpha, int beta, bool maximizingPlayer)
+        {
+            if (depth == 0 || position.LogicUpdater.GetAllValidMoves() == null)
+            {
+                return new MoveAndValue(null, EvaluatePosition(position.LogicUpdater.BoardState.Board));
+            }
+            if (maximizingPlayer)
+            {
+                int maxEval = -10000;
+                int maxIndex = 0;
+                List<Move> moves = position.LogicUpdater.GetAllValidMoves();
+
+                for (int i = 0; i < moves.Count; i++)
+                {
+                    LogicUpdater newPosition = (LogicUpdater)position.LogicUpdater.Clone();
+                    newPosition.Input(moves[i]);
+                    int eval = Minimax(new Position(newPosition, moves[i]), depth - 1, alpha, beta, false).Value;
+                    if(maxEval < eval)
+                    {
+                        maxEval = eval;
+                        maxIndex = i;
+                    }
+                    if (alpha < eval)
+                    {
+                        alpha = eval;
+                    }
+                    if (beta <= alpha)
+                    {
+                        break;
+                    }
+                }
+                return new MoveAndValue(moves[maxIndex], maxEval);
+            }
+            else
+            {
+                int minEval = 10000;
+                int minIndex = 0;
+                List<Move> moves = position.LogicUpdater.GetAllValidMoves();
+
+                for (int i = 0; i < moves.Count; i++)
+                {
+                    LogicUpdater newPosition = (LogicUpdater)position.LogicUpdater.Clone();
+                    newPosition.Input(moves[i]);
+                    int eval = Minimax(new Position(newPosition, moves[i]), depth - 1, alpha, beta, true).Value;
+                    if (minEval > eval)
+                    {
+                        minEval = eval;
+                        minIndex = i;
+                    }
+                    if (beta > eval)
+                    {
+                        beta = eval;
+                    }
+                    if (beta <= alpha)
+                    {
+                        break;
+                    }
+                }
+                return new MoveAndValue(moves[minIndex], minEval);
+            }
         }
     }
 }
