@@ -55,7 +55,7 @@ namespace ChessApplication.AI
         {
             bool maximizingPlayer = startingPosition.BoardState.Board.WhiteToMove;
             
-            return Minimax(new Position(startingPosition, null), 4, -1000, 1000, maximizingPlayer).Move;
+            return Minimax(new Position(startingPosition, null), 3, -1000, 1000, maximizingPlayer).Move;
         }
         List<Position> GetAllPositions(Position startingPosition, int depth)
         {
@@ -169,7 +169,7 @@ namespace ChessApplication.AI
         }
         MoveAndValue Minimax(Position position, int depth, int alpha, int beta, bool maximizingPlayer)
         {
-            if (depth == 0 || position.LogicUpdater.GetAllValidMoves() == null)
+            if (depth == 0 || position.LogicUpdater.GetAllValidMoves().Count == 0)
             {
                 return new MoveAndValue(null, EvaluatePosition(position.LogicUpdater.BoardState.Board));
             }
