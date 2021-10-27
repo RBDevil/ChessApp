@@ -19,7 +19,7 @@ namespace ChessApplication.AI
                 this.Value = value;
             }
         }
-        class Position : IComparable
+        class Position
         {
             public Move FirstMove { get; }
             public LogicUpdater LogicUpdater { get; }
@@ -27,24 +27,6 @@ namespace ChessApplication.AI
             {
                 LogicUpdater = position;
                 FirstMove = firstMove;
-            }
-
-            public int CompareTo(object obj)
-            {
-                int value = EvaluatePosition(LogicUpdater.BoardState.Board);
-
-                Position position = (Position)obj;
-                int value2 = EvaluatePosition(position.LogicUpdater.BoardState.Board);
-
-                if (value > value2)
-                {
-                    return -1;
-                }
-                else if (value2 > value)
-                {
-                    return 1;
-                }
-                else return 0;
             }
         }
         public Agent()
@@ -105,16 +87,25 @@ namespace ChessApplication.AI
 
             return positions;
         }
-        public static int EvaluatePosition(Board board)
+        public static int EvaluatePosition(LogicUpdater logic, List<Move> allValidMoves)
         {
+            // Checking if the position is checkmate
+            if (allValidMoves.Count == 0)
+            {
+                if (logic.BoardState.Board.WhiteToMove)
+                {
+                    return -999;
+                }
+                else return 999;
+            }
+            // Counting pieces and 
             int value = 0;
 
-            // Counting pieces
-            for (int i = 0; i < board.Pieces.GetLength(0); i++)
+            for (int i = 0; i < logic.BoardState.Board.Pieces.GetLength(0); i++)
             {
-                for (int j = 0; j < board.Pieces.GetLength(1); j++)
+                for (int j = 0; j < logic.BoardState.Board.Pieces.GetLength(1); j++)
                 {
-                    switch (board.Pieces[i,j])
+                    switch (logic.BoardState.Board.Pieces[i,j])
                     {
                         case Pieces.NoPiece:
                             break;
@@ -158,32 +149,45 @@ namespace ChessApplication.AI
                 }
             }
 
-            // Counting who's turn it is
-            //if (board.WhiteToMove)
-            //{
-            //    value += 2;
-            //}
-            //else value -= 2;
+            // Evaluating center control
+            for (int i = 3; i < 5; i++)
+            {
+                for (int j = 3; j < 5; j++)
+                {
+                    int num = LogicUpdater.CheckSquare(logic.BoardState.Board.Pieces[i, j]);
+                    if (num == 0)
+                    {
+                        value += 1;
+                    }
+                    else if (num == 1)
+                    {
+                        value -= 1;         
+                    }
+                }
+            }
 
             return value;
         }
         MoveAndValue Minimax(Position position, int depth, int alpha, int beta, bool maximizingPlayer)
         {
-            if (depth == 0 || position.LogicUpdater.GetAllValidMoves().Count == 0)
+            List<Move> allValidMoves = position.LogicUpdater.GetAllValidMoves();
+
+            if (depth == 0 || allValidMoves.Count == 0)
             {
-                return new MoveAndValue(null, EvaluatePosition(position.LogicUpdater.BoardState.Board));
+                return new MoveAndValue(null, 
+                    EvaluatePosition(position.LogicUpdater, allValidMoves));
             }
+
             if (maximizingPlayer)
             {
                 int maxEval = -10000;
                 int maxIndex = 0;
-                List<Move> moves = position.LogicUpdater.GetAllValidMoves();
 
-                for (int i = 0; i < moves.Count; i++)
+                for (int i = 0; i < allValidMoves.Count; i++)
                 {
                     LogicUpdater newPosition = (LogicUpdater)position.LogicUpdater.Clone();
-                    newPosition.Input(moves[i]);
-                    int eval = Minimax(new Position(newPosition, moves[i]), depth - 1, alpha, beta, false).Value;
+                    newPosition.Input(allValidMoves[i]);
+                    int eval = Minimax(new Position(newPosition, allValidMoves[i]), depth - 1, alpha, beta, false).Value;
                     if(maxEval < eval)
                     {
                         maxEval = eval;
@@ -198,19 +202,18 @@ namespace ChessApplication.AI
                         break;
                     }
                 }
-                return new MoveAndValue(moves[maxIndex], maxEval);
+                return new MoveAndValue(allValidMoves[maxIndex], maxEval);
             }
             else
             {
                 int minEval = 10000;
                 int minIndex = 0;
-                List<Move> moves = position.LogicUpdater.GetAllValidMoves();
 
-                for (int i = 0; i < moves.Count; i++)
+                for (int i = 0; i < allValidMoves.Count; i++)
                 {
                     LogicUpdater newPosition = (LogicUpdater)position.LogicUpdater.Clone();
-                    newPosition.Input(moves[i]);
-                    int eval = Minimax(new Position(newPosition, moves[i]), depth - 1, alpha, beta, true).Value;
+                    newPosition.Input(allValidMoves[i]);
+                    int eval = Minimax(new Position(newPosition, allValidMoves[i]), depth - 1, alpha, beta, true).Value;
                     if (minEval > eval)
                     {
                         minEval = eval;
@@ -225,7 +228,7 @@ namespace ChessApplication.AI
                         break;
                     }
                 }
-                return new MoveAndValue(moves[minIndex], minEval);
+                return new MoveAndValue(allValidMoves[minIndex], minEval);
             }
         }
     }
