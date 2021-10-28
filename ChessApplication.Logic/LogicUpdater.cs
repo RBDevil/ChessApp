@@ -37,7 +37,7 @@ namespace ChessApplication.Logic
 
         public List<Move> GetAllValidMoves()
         {
-            List<Move> allMoves = GetAllMoves();
+            List<Move> allMoves = GetAllMoves(BoardState.Board.WhiteToMove);
             List<Move> allValidMoves = new List<Move>();
             foreach (Move move in allMoves)
             {
@@ -61,7 +61,7 @@ namespace ChessApplication.Logic
                     // Save boardState so the move later can be inverted
                     FEN save = FEN.Parse(BoardState);
                     BoardState.ApplyMove(move);
-                    if (BoardState.IsValid(GetAllMoves()))
+                    if (BoardState.IsValid(GetAllMoves(BoardState.Board.WhiteToMove)))
                     {
                         BoardState = BoardState.Parse(save);
                         return true;
@@ -76,7 +76,7 @@ namespace ChessApplication.Logic
         /// Returns all the possible moves from one side, does not check for rules
         /// </summary>
         /// <returns></returns>
-        List<Move> GetAllMoves()
+        public List<Move> GetAllMoves(bool whiteToMove)
         {
             List<Move> allMoves = new List<Move>();
 
@@ -85,7 +85,7 @@ namespace ChessApplication.Logic
                 for (int j = 0; j < BoardState.Board.Pieces.GetLength(1); j++)
                 {
                     // Checks if empty, and if not, checks if the piece is on the correct side
-                    if (CheckIfItsTurn(BoardState.Board.Pieces[i,j], BoardState.Board.WhiteToMove))
+                    if (CheckIfItsTurn(BoardState.Board.Pieces[i,j], whiteToMove))
                     {
                         switch (BoardState.Board.Pieces[i, j])
                         {

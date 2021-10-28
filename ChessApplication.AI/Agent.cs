@@ -37,7 +37,7 @@ namespace ChessApplication.AI
         {
             bool maximizingPlayer = startingPosition.BoardState.Board.WhiteToMove;
             
-            return Minimax(new Position(startingPosition, null), 3, -1000, 1000, maximizingPlayer).Move;
+            return Minimax(new Position(startingPosition, null), 3, -10000, 10000, maximizingPlayer).Move;
         }
         List<Position> GetAllPositions(Position startingPosition, int depth)
         {
@@ -87,25 +87,111 @@ namespace ChessApplication.AI
 
             return positions;
         }
-        public static int EvaluatePosition(LogicUpdater logic, List<Move> allValidMoves)
+        int EvaluatePosition(LogicUpdater logic, List<Move> allValidMoves)
         {
             // Checking if the position is checkmate
             if (allValidMoves.Count == 0)
             {
                 if (logic.BoardState.Board.WhiteToMove)
                 {
-                    return -999;
+                    return -9999;
                 }
-                else return 999;
+                else return 9999;
             }
-            // Counting pieces and 
+
+            int value = 0;
+
+            // Counting pieces
+            value += CountPieces(logic);
+            value += EvaluateCenterControl(logic);
+            value += EvaluateKingSafety(logic, allValidMoves);
+
+            return value;
+        }
+        int EvaluateKingSafety(LogicUpdater logic, List<Move> allValidMoves)
+        {
+            // Evaluating king safety
+            int value = 0;
+
+            List<Move> allOppositionMoves = logic.GetAllMoves(!logic.BoardState.Board.WhiteToMove);
+
+            if (logic.BoardState.Board.WhiteToMove)
+            {
+                int[] blackKingPosition = logic.BoardState.GetKingPosition(false);
+                foreach (Move move in allValidMoves)
+                {
+                    if (Math.Abs(move.toX - blackKingPosition[0]) < 2 &&
+                        Math.Abs(move.toY - blackKingPosition[1]) < 2)
+                    {
+                        value += 1;
+                    }
+                }
+                // white king
+                int[] whiteKingPosition = logic.BoardState.GetKingPosition(true);
+                foreach (Move move in allOppositionMoves)
+                {
+                    if (Math.Abs(move.toX - whiteKingPosition[0]) < 2 &&
+                        Math.Abs(move.toY - whiteKingPosition[1]) < 2)
+                    {
+                        value -= 1;
+                    }
+                }
+            }
+            else
+            {
+                int[] blackKingPosition = logic.BoardState.GetKingPosition(false);
+                foreach (Move move in allOppositionMoves)
+                {
+                    if (Math.Abs(move.toX - blackKingPosition[0]) < 2 &&
+                        Math.Abs(move.toY - blackKingPosition[1]) < 2)
+                    {
+                        value += 1;
+                    }
+                }
+                // white king
+                int[] whiteKingPosition = logic.BoardState.GetKingPosition(true);
+                foreach (Move move in allValidMoves)
+                {
+                    if (Math.Abs(move.toX - whiteKingPosition[0]) < 2 &&
+                        Math.Abs(move.toY - whiteKingPosition[1]) < 2)
+                    {
+                        value -= 1;
+                    }
+                }
+            }
+            return value;
+        }
+        int EvaluateCenterControl(LogicUpdater logic)
+        {
+            // Evaluating center control
+            int value = 0;
+            for (int i = 3; i < 5; i++)
+            {
+                for (int j = 3; j < 5; j++)
+                {
+                    int num = LogicUpdater.CheckSquare(logic.BoardState.Board.Pieces[i, j]);
+                    if (num == 0)
+                    {
+                        value += 1;
+                    }
+                    else if (num == 1)
+                    {
+                        value -= 1;
+                    }
+                }
+            }
+
+            return value;
+        }
+        int CountPieces(LogicUpdater logic)
+        {
             int value = 0;
 
             for (int i = 0; i < logic.BoardState.Board.Pieces.GetLength(0); i++)
             {
                 for (int j = 0; j < logic.BoardState.Board.Pieces.GetLength(1); j++)
                 {
-                    switch (logic.BoardState.Board.Pieces[i,j])
+                    switch (logic.BoardState.Board.Pieces[i, j])
                     {
                         case Pieces.NoPiece:
                             break;
@@ -145,23 +231,6 @@ namespace ChessApplication.AI
                             break;
                         default:
                             break;
-                    }
-                }
-            }
-
-            // Evaluating center control
-            for (int i = 3; i < 5; i++)
-            {
-                for (int j = 3; j < 5; j++)
-                {
-                    int num = LogicUpdater.CheckSquare(logic.BoardState.Board.Pieces[i, j]);
-                    if (num == 0)
-                    {
-                        value += 1;
-                    }
-                    else if (num == 1)
-                    {
-                        value -= 1;         
                     }
                 }
             }

@@ -299,7 +299,7 @@ namespace ChessApplication.Logic
         /// </summary>
         /// <param name="white"></param>
         /// <returns></returns>
-        int[] GetKingPosition(bool white)
+        public int[] GetKingPosition(bool white)
         {
             int[] position = new int[2];
 
