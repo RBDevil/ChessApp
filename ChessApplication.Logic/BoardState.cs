@@ -145,6 +145,7 @@ namespace ChessApplication.Logic
             CheckEnPassant(move);
             CheckRookAndKingFirstMoves(move);
             CheckCastling(move);
+            CheckPromotion(move);
             
             // Check if black moved, than increment FullMoveCounter
             if (!Board.WhiteToMove)
@@ -159,6 +160,22 @@ namespace ChessApplication.Logic
             Board.Pieces[move.toX, move.toY] = Board.Pieces[move.fromX, move.fromY];
             Board.Pieces[move.fromX, move.fromY] = Pieces.NoPiece;           
         }
+
+        private void CheckPromotion(Move move)
+        {
+            if (Board.WhiteToMove)
+            {
+                if (move.toY == 0 && Board.Pieces[move.fromX, move.fromY] == Pieces.WhitePawn)
+                {
+                    Board.Pieces[move.fromX, move.fromY] = Pieces.WhiteQueen;
+                }
+            }
+            else if (move.toY == 7 && Board.Pieces[move.fromX, move.fromY] == Pieces.BlackPawn)
+            {
+                Board.Pieces[move.fromX, move.fromY] = Pieces.BlackQueen;
+            }
+        }
+
         void CheckRookAndKingFirstMoves(Move move)
         {
             // Check if a rook moved for the first time, and adjust castling availabbility flags

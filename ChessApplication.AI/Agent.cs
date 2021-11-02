@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading;
 
 namespace ChessApplication.AI
 {
@@ -87,7 +88,7 @@ namespace ChessApplication.AI
 
             return positions;
         }
-        int EvaluatePosition(LogicUpdater logic, List<Move> allValidMoves)
+        static int EvaluatePosition(LogicUpdater logic, List<Move> allValidMoves)
         {
             // Checking if the position is checkmate
             if (allValidMoves.Count == 0)
@@ -100,15 +101,13 @@ namespace ChessApplication.AI
             }
 
             int value = 0;
-
-            // Counting pieces
             value += CountPieces(logic);
             value += EvaluateCenterControl(logic);
             value += EvaluateKingSafety(logic, allValidMoves);
 
             return value;
         }
-        int EvaluateKingSafety(LogicUpdater logic, List<Move> allValidMoves)
+        static int EvaluateKingSafety(LogicUpdater logic, List<Move> allValidMoves)
         {
             // Evaluating king safety
             int value = 0;
@@ -161,7 +160,7 @@ namespace ChessApplication.AI
             }
             return value;
         }
-        int EvaluateCenterControl(LogicUpdater logic)
+        static int EvaluateCenterControl(LogicUpdater logic)
         {
             // Evaluating center control
             int value = 0;
@@ -183,7 +182,7 @@ namespace ChessApplication.AI
 
             return value;
         }
-        int CountPieces(LogicUpdater logic)
+        static int CountPieces(LogicUpdater logic)
         {
             int value = 0;
 
@@ -237,7 +236,7 @@ namespace ChessApplication.AI
 
             return value;
         }
-        MoveAndValue Minimax(Position position, int depth, int alpha, int beta, bool maximizingPlayer)
+        static MoveAndValue Minimax(Position position, int depth, int alpha, int beta, bool maximizingPlayer)
         {
             List<Move> allValidMoves = position.LogicUpdater.GetAllValidMoves();
 
@@ -271,6 +270,7 @@ namespace ChessApplication.AI
                         break;
                     }
                 }
+
                 return new MoveAndValue(allValidMoves[maxIndex], maxEval);
             }
             else
@@ -297,6 +297,7 @@ namespace ChessApplication.AI
                         break;
                     }
                 }
+
                 return new MoveAndValue(allValidMoves[minIndex], minEval);
             }
         }

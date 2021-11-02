@@ -6,10 +6,10 @@ namespace ChessApplication.AI
 {
     enum PieceValues
     {
-        Pawn = 1,
-        Knight = 3,
-        Bishop = 3,
-        Rook = 5,
-        Queen = 9,
+        Pawn = 10,
+        Knight = 30,
+        Bishop = 30,
+        Rook = 50,
+        Queen = 90,
     }
 }
